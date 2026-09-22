@@ -1,0 +1,21 @@
+<!-- Global Toast Notifications Container -->
+<div class="sms-toast-container">
+  @for (toast of toasts(); track toast.id) {
+    <div class="sms-toast" [class]="toast.type" (click)="removeToast(toast.id)">
+      <span class="material-symbols-outlined">
+        {{ toast.type === 'success' ? 'check_circle' : toast.type === 'error' ? 'error' : 'info' }}
+      </span>
+      <span>{{ toast.message }}</span>
+    </div>
+  }
+</div>
+
+<!-- Header Navigation Bar (Shown when authenticated) -->
+@if (isAuthenticated()) {
+  <app-navbar></app-navbar>
+}
+
+<!-- Main Application Routing View -->
+<main class="app-main-content">
+  <router-outlet></router-outlet>
+</main>
