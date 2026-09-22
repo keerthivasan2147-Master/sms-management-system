@@ -38,11 +38,14 @@ builder.Services.AddControllers()
     });
 
 // Configure CORS
+var allowedOrigins = builder.Configuration["AllowedOrigins"]?.Split(",") 
+    ?? ["http://localhost:4200", "http://127.0.0.1:4200", "https://localhost:4200"];
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-        policy.WithOrigins("http://localhost:4200", "http://127.0.0.1:4200", "https://localhost:4200")
+        policy.WithOrigins(allowedOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -93,15 +96,13 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 // Configure HTTP request pipeline
-if (app.Environment.IsDevelopment())
+// Enable Swagger in all environments (useful for Railway/cloud testing)
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI(c =>
-    {
-        c.SwaggerEndpoint("/swagger/v1/swagger.json", "SMS API v1");
-        c.RoutePrefix = "swagger";
-    });
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "SMS API v1");
+    c.RoutePrefix = "swagger";
+});
 
 // Exception handling middleware for consistent JSON errors
 app.Use(async (context, next) =>
