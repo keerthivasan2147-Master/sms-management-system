@@ -11,55 +11,76 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
+  <!-- WebCallHub domain verification (required before widget loads) -->
+  <meta name="webcallhub-verify" content="webcallhub-verify-0910ea2cd1285589">
 </head>
 <body class="dx-viewport app-dark-theme">
   <app-root></app-root>
 
-  <!-- ============================================================ -->
-  <!-- Chat Widget Configuration                                    -->
-  <!-- Set a flag to false to disable that widget at any time       -->
-  <!-- Widget layout (bottom-right, stacked from bottom up):        -->
-  <!--   Position 1 (20px)  → SiteAnswerAI                         -->
-  <!--   Position 2 (100px) → Tawk.to                              -->
-  <!--   Position 3 (top navbar) → Built-in SMS AI Chat            -->
-  <!-- ============================================================ -->
+  <!-- ================================================================ -->
+  <!-- CHAT WIDGET CONFIGURATION                                         -->
+  <!-- Set any flag to false to instantly disable that widget            -->
+  <!--                                                                   -->
+  <!-- Bottom-right stack layout (outermost = lowest):                  -->
+  <!--   Slot 1 → bottom: 20px  → SiteAnswerAI  (🤖 blue robot)        -->
+  <!--   Slot 2 → bottom: 100px → Tawk.to        (🔴 red bubble)        -->
+  <!--   Slot 3 → bottom: 180px → WebCallHub     (📞 call widget)       -->
+  <!--   Navbar → top-right     → Built-in SMS AI (AI On/Off button)    -->
+  <!-- ================================================================ -->
   <script type="text/javascript">
     var CHAT_CONFIG = {
-      enableTawkTo: true,        // Set to false to disable Tawk.to
-      enableSiteAnswerAI: true   // Set to false to disable SiteAnswerAI
-      // Note: Built-in SMS AI Chat is toggled via the "AI On/Off" button in the top navbar
+      enableSiteAnswerAI : true,   // 🤖 SiteAnswerAI  — set false to disable
+      enableTawkTo       : true,   // 🔴 Tawk.to        — set false to disable
+      enableWebCallHub   : true    // 📞 WebCallHub     — set false to disable
+      // Built-in SMS AI is toggled via the "AI On/Off" button in the top navbar
     };
   </script>
 
-  <!-- ── Widget Positioning Overrides ─────────────────────────── -->
-  <!-- Tawk.to sits 100px from bottom; SiteAnswerAI stays at 20px  -->
+  <!-- ── Widget Positioning CSS ──────────────────────────────────────── -->
+  <!-- Each widget occupies its own 80px slot so they never overlap.     -->
   <style>
-    /* Tawk.to minimized bubble — push up so it clears SiteAnswerAI */
+    /* ── Slot 1 (20px from bottom): SiteAnswerAI ── stays at its default */
+
+    /* ── Slot 2 (100px from bottom): Tawk.to ── */
     #tawkchat-minified-wrapper,
     .tawk-min-container,
-    iframe[title="chat widget"] {
-      bottom: 100px !important;
-    }
-
-    /* Tawk.to open chat window — also offset upward */
     #tawkchat-container,
-    .tawk-chat-panel {
-      bottom: 100px !important;
-    }
-
-    /* Fallback: target any Tawk iframe by src pattern */
+    .tawk-chat-panel,
     iframe[src*="tawk.to"] {
       bottom: 100px !important;
     }
+
+    /* ── Slot 3 (180px from bottom): WebCallHub ── */
+    #webcallhub-widget,
+    .webcallhub-widget,
+    .wcb-widget,
+    .wcb-launcher,
+    iframe[src*="webcallhub.com"] {
+      bottom: 180px !important;
+    }
   </style>
 
-  <!-- Tawk.to Chat Widget -->
+  <!-- ── 1. SiteAnswerAI (Slot 1 · bottom 20px) ──────────────────────── -->
+  <script type="text/javascript">
+  if (CHAT_CONFIG.enableSiteAnswerAI) {
+    (function(){
+      var s = document.createElement('script');
+      s.src   = 'https://www.siteanswerai.com/widget/bfc44a9b-ba2f-4923-b4e5-3e02d37c7daf/embed.js';
+      s.async = true;
+      document.head.appendChild(s);
+    })();
+  }
+  </script>
+  <!-- End of SiteAnswerAI -->
+
+  <!-- ── 2. Tawk.to (Slot 2 · bottom 100px) ──────────────────────────── -->
   <script type="text/javascript">
   if (CHAT_CONFIG.enableTawkTo) {
-    var Tawk_API = Tawk_API || {};
+    var Tawk_API       = Tawk_API || {};
     var Tawk_LoadStart = new Date();
 
-    // Use Tawk API to set the widget offset from bottom
+    // Tawk official API: shift bubble 90px above the default 10px baseline
     Tawk_API.customStyle = {
       zIndex: 1000,
       visibility: {
@@ -69,30 +90,31 @@
     };
 
     (function(){
-      var s1 = document.createElement("script"),
-          s0 = document.getElementsByTagName("script")[0];
+      var s1 = document.createElement('script'),
+          s0 = document.getElementsByTagName('script')[0];
       s1.async = true;
-      s1.src = 'https://embed.tawk.to/6aca2d2298b9c934c10c4787/1k4is0ju4';
+      s1.src   = 'https://embed.tawk.to/6aca2d2298b9c934c10c4787/1k4is0ju4';
       s1.charset = 'UTF-8';
       s1.setAttribute('crossorigin', '*');
       s0.parentNode.insertBefore(s1, s0);
     })();
   }
   </script>
-  <!-- End of Tawk.to Script -->
+  <!-- End of Tawk.to -->
 
-  <!-- SiteAnswerAI Chat Widget (stays at default bottom: 20px) -->
+  <!-- ── 3. WebCallHub (Slot 3 · bottom 180px) ───────────────────────── -->
   <script type="text/javascript">
-  if (CHAT_CONFIG.enableSiteAnswerAI) {
+  if (CHAT_CONFIG.enableWebCallHub) {
     (function(){
-      var s = document.createElement("script");
-      s.src = 'https://www.siteanswerai.com/widget/bfc44a9b-ba2f-4923-b4e5-3e02d37c7daf/embed.js';
-      s.async = true;
-      document.head.appendChild(s);
+      var s = document.createElement('script');
+      s.src          = 'https://webcallhub.com/embed/widget.js';
+      s.setAttribute('data-tenant', 'd69ce30d-c585-48c8-9295-ad3a28f7cd0b');
+      s.async        = true;
+      document.body.appendChild(s);
     })();
   }
   </script>
-  <!-- End of SiteAnswerAI Script -->
+  <!-- End of WebCallHub -->
 
 </body>
 </html>
