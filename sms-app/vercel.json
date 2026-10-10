@@ -1,22 +1,10 @@
 {
-  "version": 2,
-  "name": "sms-app",
-  "builds": [
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/sms-app/browser",
+  "rewrites": [
     {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist/sms-app/browser"
-      }
+      "source": "/(.*)",
+      "destination": "/index.html"
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+  ]
 }

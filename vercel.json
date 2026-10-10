@@ -1,0 +1,10 @@
+{
+  "buildCommand": "cd sms-app && npm install && npm run build",
+  "outputDirectory": "sms-app/dist/sms-app/browser",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
