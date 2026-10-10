@@ -17,7 +17,6 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
-    @if (isAuthenticated()) {
     <!-- Floating Chat Button -->
     <div class="chat-fab-wrapper">
       @if (!isOpen()) {
@@ -222,7 +221,6 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
       </div>
     }
-    } <!-- end isAuthenticated -->
   `,
   styles: [`
     /* ── FAB ──────────────────────────────────────────── */
