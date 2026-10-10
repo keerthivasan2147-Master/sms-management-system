@@ -3,10 +3,11 @@ import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './layout/navbar/navbar.component';
 import { AuthService } from './core/services/auth.service';
 import { NotificationService } from './core/services/notification.service';
+import { ChatWidgetComponent } from './shared/chat-widget/chat-widget.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavbarComponent],
+  imports: [RouterOutlet, NavbarComponent, ChatWidgetComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
