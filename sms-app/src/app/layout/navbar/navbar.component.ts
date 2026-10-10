@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { ChatService } from '../../core/services/chat.service';
 
 @Component({
   selector: 'app-navbar',
@@ -58,6 +59,18 @@ import { AuthService } from '../../core/services/auth.service';
               </div>
             </div>
           }
+
+          <!-- AI Chatbox Toggle -->
+          <button
+            type="button"
+            class="ai-toggle-nav-btn"
+            [class.disabled-state]="isAiDisabled()"
+            (click)="toggleAi()"
+            [title]="isAiDisabled() ? 'Click to Enable AI Assistant' : 'Click to Disable AI Assistant'"
+          >
+            <span class="material-symbols-outlined">{{ isAiDisabled() ? 'smart_toy' : 'smart_toy' }}</span>
+            <span class="toggle-text">{{ isAiDisabled() ? 'AI Off' : 'AI On' }}</span>
+          </button>
 
           <button type="button" class="logout-btn" (click)="logout()" title="Sign Out">
             <span class="material-symbols-outlined">logout</span>
@@ -224,6 +237,36 @@ import { AuthService } from '../../core/services/auth.service';
       transition: all var(--transition-fast);
     }
 
+    .ai-toggle-nav-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: #60a5fa;
+      transition: all var(--transition-fast);
+    }
+
+    .ai-toggle-nav-btn:hover {
+      background: rgba(59, 130, 246, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .ai-toggle-nav-btn.disabled-state {
+      background: rgba(100, 116, 139, 0.15);
+      border-color: rgba(100, 116, 139, 0.3);
+      color: #94a3b8;
+    }
+
+    .ai-toggle-nav-btn .material-symbols-outlined {
+      font-size: 18px;
+    }
+
     .logout-btn:hover {
       background: rgba(239, 68, 68, 0.25);
       transform: scale(1.05);
@@ -232,7 +275,14 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class NavbarComponent {
   private authService = inject(AuthService);
+  private chatService = inject(ChatService);
+
   currentUser = this.authService.currentUser;
+  isAiDisabled = this.chatService.isAiDisabled;
+
+  toggleAi(): void {
+    this.chatService.toggleAiDisabled();
+  }
 
   logout(): void {
     this.authService.logout();

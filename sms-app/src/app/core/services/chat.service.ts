@@ -19,6 +19,34 @@ export class ChatService {
 
   readonly messages = signal<ChatMessage[]>([]);
   readonly isLoading = signal(false);
+  readonly isAiDisabled = signal<boolean>(this.loadAiDisabled());
+
+  private loadAiDisabled(): boolean {
+    try {
+      return typeof window !== 'undefined' && localStorage.getItem('sms_ai_chat_disabled') === 'true';
+    } catch {
+      return false;
+    }
+  }
+
+  toggleAiDisabled(): void {
+    const next = !this.isAiDisabled();
+    this.isAiDisabled.set(next);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('sms_ai_chat_disabled', String(next));
+      }
+    } catch { }
+  }
+
+  setAiDisabled(val: boolean): void {
+    this.isAiDisabled.set(val);
+    try {
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('sms_ai_chat_disabled', String(val));
+      }
+    } catch { }
+  }
 
   // ─── OpenAI Config (plug in your key when ready) ───────────────────────
   private openAiKey: string | null = (environment as any).openAiKey ?? null;

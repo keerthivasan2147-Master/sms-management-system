@@ -17,6 +17,7 @@ import { AuthService } from '../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   template: `
+    @if (!isAiDisabled()) {
     <!-- Floating Chat Button -->
     <div class="chat-fab-wrapper">
       @if (!isOpen()) {
@@ -76,6 +77,9 @@ import { AuthService } from '../../core/services/auth.service';
             </button>
             <button class="header-btn" (click)="clearChat()" title="Clear Chat">
               <span class="material-symbols-outlined">refresh</span>
+            </button>
+            <button class="header-btn" (click)="disableAi()" title="Disable AI Assistant">
+              <span class="material-symbols-outlined">visibility_off</span>
             </button>
             <button class="header-btn close-btn" (click)="closeChat()" title="Close">
               <span class="material-symbols-outlined">close</span>
@@ -221,12 +225,13 @@ import { AuthService } from '../../core/services/auth.service';
         </div>
       </div>
     }
+    } <!-- end !isAiDisabled -->
   `,
   styles: [`
     /* ── FAB ──────────────────────────────────────────── */
     .chat-fab-wrapper {
       position: fixed;
-      bottom: 28px;
+      bottom: 96px;
       right: 28px;
       z-index: 9999;
       display: flex;
@@ -655,6 +660,12 @@ export class ChatWidgetComponent implements AfterViewChecked {
 
   isAuthenticated = this.authService.isAuthenticated;
   isLoading = this.chatService.isLoading;
+  isAiDisabled = this.chatService.isAiDisabled;
+
+  disableAi(): void {
+    this.closeChat();
+    this.chatService.setAiDisabled(true);
+  }
 
   currentMessages = computed(() =>
     this.chatService.messages().filter(m => m.mode === this.activeMode())
