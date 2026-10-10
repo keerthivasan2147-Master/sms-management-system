@@ -18,37 +18,76 @@
   <!-- ============================================================ -->
   <!-- Chat Widget Configuration                                    -->
   <!-- Set a flag to false to disable that widget at any time       -->
+  <!-- Widget layout (bottom-right, stacked from bottom up):        -->
+  <!--   Position 1 (20px)  → SiteAnswerAI                         -->
+  <!--   Position 2 (100px) → Tawk.to                              -->
+  <!--   Position 3 (top navbar) → Built-in SMS AI Chat            -->
   <!-- ============================================================ -->
   <script type="text/javascript">
     var CHAT_CONFIG = {
       enableTawkTo: true,        // Set to false to disable Tawk.to
       enableSiteAnswerAI: true   // Set to false to disable SiteAnswerAI
+      // Note: Built-in SMS AI Chat is toggled via the "AI On/Off" button in the top navbar
     };
   </script>
+
+  <!-- ── Widget Positioning Overrides ─────────────────────────── -->
+  <!-- Tawk.to sits 100px from bottom; SiteAnswerAI stays at 20px  -->
+  <style>
+    /* Tawk.to minimized bubble — push up so it clears SiteAnswerAI */
+    #tawkchat-minified-wrapper,
+    .tawk-min-container,
+    iframe[title="chat widget"] {
+      bottom: 100px !important;
+    }
+
+    /* Tawk.to open chat window — also offset upward */
+    #tawkchat-container,
+    .tawk-chat-panel {
+      bottom: 100px !important;
+    }
+
+    /* Fallback: target any Tawk iframe by src pattern */
+    iframe[src*="tawk.to"] {
+      bottom: 100px !important;
+    }
+  </style>
 
   <!-- Tawk.to Chat Widget -->
   <script type="text/javascript">
   if (CHAT_CONFIG.enableTawkTo) {
-    var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+    var Tawk_API = Tawk_API || {};
+    var Tawk_LoadStart = new Date();
+
+    // Use Tawk API to set the widget offset from bottom
+    Tawk_API.customStyle = {
+      zIndex: 1000,
+      visibility: {
+        desktop: { position: 'br', xOffset: 20, yOffset: 90 },
+        mobile:  { position: 'br', xOffset: 15, yOffset: 90 }
+      }
+    };
+
     (function(){
-      var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-      s1.async=true;
-      s1.src='https://embed.tawk.to/6aca2d2298b9c934c10c4787/1k4is0ju4';
-      s1.charset='UTF-8';
-      s1.setAttribute('crossorigin','*');
-      s0.parentNode.insertBefore(s1,s0);
+      var s1 = document.createElement("script"),
+          s0 = document.getElementsByTagName("script")[0];
+      s1.async = true;
+      s1.src = 'https://embed.tawk.to/6aca2d2298b9c934c10c4787/1k4is0ju4';
+      s1.charset = 'UTF-8';
+      s1.setAttribute('crossorigin', '*');
+      s0.parentNode.insertBefore(s1, s0);
     })();
   }
   </script>
   <!-- End of Tawk.to Script -->
 
-  <!-- SiteAnswerAI Chat Widget -->
+  <!-- SiteAnswerAI Chat Widget (stays at default bottom: 20px) -->
   <script type="text/javascript">
   if (CHAT_CONFIG.enableSiteAnswerAI) {
     (function(){
-      var s=document.createElement("script");
-      s.src='https://www.siteanswerai.com/widget/bfc44a9b-ba2f-4923-b4e5-3e02d37c7daf/embed.js';
-      s.async=true;
+      var s = document.createElement("script");
+      s.src = 'https://www.siteanswerai.com/widget/bfc44a9b-ba2f-4923-b4e5-3e02d37c7daf/embed.js';
+      s.async = true;
       document.head.appendChild(s);
     })();
   }
