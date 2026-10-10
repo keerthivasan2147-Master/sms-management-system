@@ -2,8 +2,7 @@ services:
   - type: web
     name: sms-api
     runtime: docker
-    dockerfilePath: SMS.API/Dockerfile
-    dockerContext: SMS.API
+    dockerfilePath: Dockerfile
     plan: free
     region: oregon
     envVars:
