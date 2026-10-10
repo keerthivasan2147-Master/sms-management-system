@@ -55,6 +55,23 @@ export class AuthService {
     );
   }
 
+  loginAsDemo(): void {
+    if (this.isBrowser) {
+      const demoToken = 'demo-jwt-token-live-showcase';
+      const user: User = {
+        userId: 1,
+        name: 'System Administrator',
+        username: 'admin',
+        mobile: '+1-555-0199',
+        role: 'Admin'
+      };
+      localStorage.setItem('sms_token', demoToken);
+      localStorage.setItem('sms_user', JSON.stringify(user));
+      this.token.set(demoToken);
+      this.currentUser.set(user);
+    }
+  }
+
   logout(): void {
     if (this.isBrowser) {
       localStorage.removeItem('sms_token');

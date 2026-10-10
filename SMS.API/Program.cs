@@ -11,11 +11,23 @@ using SMS.API.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add Database Context
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") 
-    ?? "Server=localhost;Database=SMSDb;Trusted_Connection=True;TrustServerCertificate=True;";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var isSqlServer = !string.IsNullOrEmpty(connectionString) && 
+                  (connectionString.Contains("Server=") || connectionString.Contains("Data Source=tcp:"));
 
 builder.Services.AddDbContext<SMSDbContext>(options =>
-    options.UseSqlServer(connectionString));
+{
+    if (isSqlServer)
+    {
+        options.UseSqlServer(connectionString);
+    }
+    else
+    {
+        // Use SQLite for zero-config, free cloud hosting (Render, Railway, etc.)
+        var dbPath = Path.Combine(AppContext.BaseDirectory, "sms.db");
+        options.UseSqlite($"Data Source={dbPath}");
+    }
+});
 
 // Add Repositories
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
@@ -37,15 +49,12 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
-// Configure CORS
-var allowedOrigins = builder.Configuration["AllowedOrigins"]?.Split(",") 
-    ?? ["http://localhost:4200", "http://127.0.0.1:4200", "https://localhost:4200"];
-
+// Configure CORS (allow all origins including live Vercel deployments and localhost)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-        policy.WithOrigins(allowedOrigins)
+        policy.SetIsOriginAllowed(_ => true)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
@@ -95,8 +104,23 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+// Auto-create database schema & seed initial admin user, customers, items
+using (var scope = app.Services.CreateScope())
+{
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<SMSDbContext>();
+        db.Database.EnsureCreated();
+        DbSeeder.Seed(db);
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred while initializing or seeding the database.");
+    }
+}
+
 // Configure HTTP request pipeline
-// Enable Swagger in all environments (useful for Railway/cloud testing)
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -123,6 +147,9 @@ app.UseCors("AllowAngularApp");
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Health check endpoint for Render/uptime monitors
+app.MapGet("/api/health", () => Results.Ok(new { status = "Healthy", timestamp = DateTime.UtcNow }));
 
 app.MapControllers();
 

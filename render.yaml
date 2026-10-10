@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: sms-api
+    runtime: docker
+    dockerfilePath: SMS.API/Dockerfile
+    dockerContext: SMS.API
+    plan: free
+    region: oregon
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: AllowedOrigins
+        value: https://sms-app-steel.vercel.app,http://localhost:4200

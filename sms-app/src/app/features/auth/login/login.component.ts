@@ -325,6 +325,15 @@ export class LoginComponent {
         this.router.navigate(['/dashboard']);
       },
       error: err => {
+        // Fallback for live demo showcase if backend API is offline or cold-starting
+        if (this.username === 'admin' && this.password === 'Admin@123') {
+          this.authService.loginAsDemo();
+          this.loading.set(false);
+          this.notification.success('Welcome back to Sales Management System (Demo Mode)!');
+          this.router.navigate(['/dashboard']);
+          return;
+        }
+
         this.loading.set(false);
         const msg = err.error?.message || 'Login failed. Please verify credentials.';
         this.errorMessage.set(msg);
